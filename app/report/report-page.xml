@@ -1,0 +1,40 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" xmlns:chart="nativescript-ui-chart" class="page" navigatingTo="onNavigatingTo">
+
+    <ActionBar class="action-bar" title="Report for all rounds"></ActionBar>
+    <ScrollView>
+
+        <StackLayout class="p-20" height="1000">
+            <chart:RadCartesianChart class="m-t-5" height="500">
+                <chart:RadCartesianChart.series>
+                    <chart:BarSeries items="{{ data }}" categoryProperty="name" valueProperty="score" showLabels="false">
+                        <chart:BarSeries.horizontalAxis>
+                            <chart:CategoricalAxis labelFitMode="Rotate" />
+                        </chart:BarSeries.horizontalAxis>
+                        <chart:BarSeries.verticalAxis>
+                            <chart:LinearAxis />
+                        </chart:BarSeries.verticalAxis>
+
+                    </chart:BarSeries>
+                </chart:RadCartesianChart.series>
+            </chart:RadCartesianChart>
+            <StackLayout>
+                <StackLayout orientation="horizontal">
+                    <Label text="Round Min value:" />
+                    <Label text="{{min}}" />
+                </StackLayout>
+                <Slider value="1" minValue="1" maxValue="{{rounds}}" loaded="{{onMinSliderLoaded}}" />
+                <StackLayout orientation="horizontal">
+                    <Label text="Round Max value:" />
+                    <Label text="{{max}}" />
+                </StackLayout>
+                <Slider value="1" minValue="1" maxValue="{{rounds}}" loaded="{{onMaxSliderLoaded}}" />
+                <StackLayout orientation="horizontal">
+                    <Button text="Apply" backgroundColor="green" tap="{{onApply}}"></Button>
+                    <Button text="Back" backgroundColor="blue" tap="{{onBack}}"></Button>
+                </StackLayout>
+                <Label text="{{err_msg}}" color="red" />
+            </StackLayout>
+        </StackLayout>
+
+    </ScrollView>
+</Page>

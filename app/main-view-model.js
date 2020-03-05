@@ -1,7 +1,6 @@
 const Observable = require("tns-core-modules/data/observable").Observable;
 const getViewById = require("tns-core-modules/ui/core/view").getViewById;
-const ObservableArray = require("tns-core-modules/data/observable-array")
-    .ObservableArray;
+const ObservableArray = require("tns-core-modules/data/observable-array").ObservableArray;
 const frame = require("tns-core-modules/ui/frame");
 const TextField = require("tns-core-modules/ui/text-field").TextField;
 const StackLayout = require("tns-core-modules/ui/layouts/stack-layout")
@@ -13,9 +12,13 @@ const dialogs = require("tns-core-modules/ui/dialogs");
 const  ScrollView=require("tns-core-modules/ui/scroll-view").ScrollView
 const Button= require("tns-core-modules/ui/button").Button
 var round_num = 0;
-
+var totals =[]
+var items_chart = new ObservableArray([])
 function update() {
     const page = frame.topmost().currentPage;
+    while(totals.length>0)
+        totals.pop()
+   
     for (let i = 1; i <= num_pl; i++) {
         var total = 0;
         for (let j = 1; j <= round_num; j++) {
@@ -26,8 +29,13 @@ function update() {
             total += num_tmp;
         }
         let textField = getViewById(page, "tot" + i);
+
         textField.text = total + "";
+        totals.push(total);
     }
+    
+
+    //console.log('items',items_chart)
 }
 function resetRounds() {
     round_num = 0;
@@ -50,6 +58,7 @@ function resetRounds() {
 
     update();
 }
+ 
 function startFromScratch() {
     num_pl = 0;
     round_num = 0;
@@ -75,15 +84,25 @@ function startFromScratch() {
     names=[]
 }
 
-function createViewModel() {
+function  createViewModel() {
     const viewModel = new Observable();
     viewModel.set("err_msg", "");
+   
+    //items_chart.push()
+    viewModel.set("items_chart",[{name:"Brave", total:93},{name:"Blaise", total:3}]);
 
-    viewModel.onNext = args => {
+    //console.log(viewModel.get("items"))
+  
+
+    
+    //console.log(chart_stack)
+    viewModel.onNext = (args) => {
+        
+        //items_chart.push([{name:"Blaise", total:3},{name:"MAhoro", total:13}]);
         const page = frame.topmost().currentPage;
         const num_pl_text = getViewById(page, "pl_num").text;
         num_pl = parseInt(num_pl_text);
-
+        
         if (!Number.isNaN(num_pl)&&num_pl>0) {
             viewModel.set("err_msg", "");
             const grid = getViewById(page, "grid-1");
@@ -104,7 +123,9 @@ function createViewModel() {
         } else {
             viewModel.set("err_msg", "Please a valid  greater than 0.");
         }
+       
     };
+   
     viewModel.onOK = args => {
         const page = frame.topmost().currentPage;
         const grid2 = getViewById(page, "grid-2");
@@ -116,6 +137,7 @@ function createViewModel() {
         var temp_text = "";
         const stack1 = getViewById(page, "stack-1");
         var stackLayout = new StackLayout();
+
 
         stackLayout.orientation = "horizontal";
         for (let i = 1; i <= num_pl; i++) {
@@ -163,9 +185,19 @@ function createViewModel() {
         }
         stack_tot.addChild(stackLayout);
         stack1.visibility = "visible";
+        
     };
     viewModel.onUpdate = () => {
+        
         update();
+        var items=[]
+        for(let i=0; i<totals.length; i++ ){
+            items.push({name:names[i], total:totals[i]})
+        }
+        viewModel.set("items_chart", items)
+        const page = frame.topmost().currentPage;
+        const chart_stack =  getViewById(page,"bar_chart")
+        chart_stack.visibility="visible"
     };
     viewModel.onNewRound = () => {
         const page = frame.topmost().currentPage;
@@ -233,6 +265,14 @@ function createViewModel() {
         //stack_3.visibility="visible"
         score_comm.removeChildren()
         update()
+        var items=[]
+        for(let i=0; i<totals.length; i++ ){
+            items.push({name:names[i], total:totals[i]})
+        }
+        viewModel.set("items_chart", items)
+
+        const chart_stack =  getViewById(page,"bar_chart")
+        chart_stack.visibility="visible"
         })
         score_comm.addChild(btn)
         
@@ -248,13 +288,18 @@ function createViewModel() {
                 neutralButtonText: "Clear all rounds info"
             })
             .then(function(result) {
+                const page = frame.topmost().currentPage
                 // result argument is boolean
                 if (result == true) {
+                    const chart_stack =  getViewById(page,"bar_chart")
+                    chart_stack.visibility="collapsed"
                     //start from scratch
                     startFromScratch();
                 } else if (result == false) {
                     //do nothing
                 } else {
+                    const chart_stack =  getViewById(page,"bar_chart")
+                    chart_stack.visibility="collapsed"
                     //undefined
                     //remove all rounds, keep all players.
                     resetRounds();
@@ -266,17 +311,48 @@ function createViewModel() {
         dialogs
             .confirm({
                 title: "Game Score App",
-                message: "Developed by Baise Mahoro.\n in fulfillment of requirements for Assignment 6 of CMSC 4233 (or 5233) in the Spring 2020 course  ",
+                message: "Developed by Baise Mahoro.\n in fulfillment of requirements for Assignment 7 of CMSC 4233 (or 5233) in the Spring 2020 course  ",
                 okButtonText: "OK",
 
             })
             .then(function(result) {
                
-                console.log("Dialog result: " + result);
+                //console.log("Dialog result: " + result);
             });
     }
        
+    viewModel.onFullChart=()=>{
+        const page= frame.topmost().currentPage
+        let data =[]
+        for (let i = 1; i <= round_num; i++) {
+            var total = 0;
+            for (let j = 1; j <= num_pl; j++) {
+                let text_tmp = getViewById(page, i + "" + j).text;
+                var num_tmp = Number.isNaN(parseInt(text_tmp))
+                    ? 0
+                    : parseInt(text_tmp);
+                data.push({name:names[j-1]+"round"+i, score:num_tmp, round:i})
+            }
+           
+        }
 
+        frame.topmost().navigate({
+            moduleName:"report/report-page",
+            context:{
+                data:data,
+                rounds:round_num
+            }
+        })
+        // const all_stack = getViewById(page, "all_stack")
+        // all_stack.visibility="collapsed"
+        const chart_stack =  getViewById(page,"bar_chart")
+        chart_stack.visibility="collapsed"
+        // const full_report= getViewById(page,"full_report")
+
+        // full_report.visibility="visible"
+        
+
+    }
     return viewModel;
 }
 

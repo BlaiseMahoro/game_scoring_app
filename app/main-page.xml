@@ -4,17 +4,13 @@ of which NativeScript renders with a platform-specific iOS or Android native con
 You can find a full list of user interface components you can use in your app at
 https://docs.nativescript.org/ui/components.
 -->
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" xmlns:chart="nativescript-ui-chart" navigatingTo="onNavigatingTo">
     <!--
     The ActionBar is the NativeScript common abstraction over the Android ActionBar and iOS NavigationBar.
     http://docs.nativescript.org/ui/action-bar
     -->
     <ActionBar title="Game Score App" icon="">
-        <ActionItem android.systemIcon="ic_menu_info_details" 
-        android.position ="right"
-         tap="{{onHelpButtonTap}}"
-         ios.position="left">
-     </ActionItem>
+        <ActionItem android.systemIcon="ic_menu_info_details" android.position="right" tap="{{onHelpButtonTap}}" ios.position="left"></ActionItem>
 
     </ActionBar>
 
@@ -30,63 +26,82 @@ https://docs.nativescript.org/ui/components.
     You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
     -->
     <ScrollView>
-    <ScrollView orientation="horizontal">
     <StackLayout>
-    
-    <GridLayout rows="auto, *, auto" id="overall-grid">
+        <ScrollView>
+            <ScrollView orientation="horizontal">
+                <StackLayout id="all_stack">
 
-        <GridLayout rows="auto,auto, auto" columns="auto, *" class="p-20" id="grid-1">
-            <Label row="0" col="0" text="Number of players" />
-            <TextField row="0" col="1" id="pl_num" hint="Enter number of players"></TextField>
-            <Button row="1" text="Next" tap="{{ onNext }}" class="-primary" />
-            <Label row="2" text="{{err_msg}}" color="red" />
-        </GridLayout>
+                    <GridLayout rows="auto, *, auto" id="overall-grid">
 
-        <GridLayout rows="auto, auto" id="grid-2" visibility="collapsed">
+                        <GridLayout rows="auto,auto, auto" columns="auto, *" class="p-20" id="grid-1">
+                            <Label row="0" col="0" text="Number of players" />
+                            <TextField row="0" col="1" id="pl_num" hint="Enter number of players"></TextField>
+                            <Button row="1" text="Next" tap="{{ onNext }}" class="-primary" />
+                            <Label row="2" text="{{err_msg}}" color="red" />
+                        </GridLayout>
 
-            <StackLayout orientation="vertical" row="0" id="stack-0"></StackLayout>
-            <Button row="1" text="OK" tap="{{ onOK }}" class="-primary" />
+                        <GridLayout rows="auto, auto" id="grid-2" visibility="collapsed">
 
-        </GridLayout>
-        <GridLayout rows="*, auto, auto">
+                            <StackLayout orientation="vertical" row="0" id="stack-0"></StackLayout>
+                            <Button row="1" text="OK" tap="{{ onOK }}" class="-primary" />
+
+                        </GridLayout>
+                        <GridLayout rows="*, auto, auto">
 
 
-            <StackLayout row="0" id="stack-1" orientation="vertical" visibility="collapsed">
-                <StackLayout orientation="horizontal">
+                            <StackLayout row="0" id="stack-1" orientation="vertical" visibility="collapsed">
+                                <StackLayout orientation="horizontal">
 
-                    <Button text="New Game" tap="{{ onNewGame }}" class="-primary" />
-                    <Button text="New Round" tap="{{onNewRound}}" class="-primary" />
+                                    <Button text="New Game" tap="{{ onNewGame }}" class="-primary" />
+                                    <Button text="New Round" tap="{{onNewRound}}" class="-primary" />
+                                </StackLayout>
+
+                            </StackLayout>
+
+                            <StackLayout row="1" id="tot-stack" orientation="vertical" visibility="collapsed">
+
+                                <StackLayout id="stack-3" orientation="vertical"></StackLayout>
+
+                                <Label text="Totals:" />
+
+                            </StackLayout>
+
+
+                        </GridLayout>
+                        <StackLayout row="2" id="stack-2" visibility="collapsed">
+                            <StackLayout id="show_comm"></StackLayout>
+                            <StackLayout orientation="horizontal">
+                                <Label text="Click on update to apply changes" />
+                                <Button text="Update" tap="{{onUpdate}}" backgroundColor="green" />
+                            </StackLayout>
+                            <StackLayout>
+                                <Button text="Full Report"  backgroundColor="green" tap="{{onFullChart}}"></Button>
+                            </StackLayout>
+                        </StackLayout>
+
+                    </GridLayout>
+                    <StackLayout id="score_comm"></StackLayout>
                 </StackLayout>
-               
-            </StackLayout>
+            </ScrollView>
+        </ScrollView>
             
-            <StackLayout  row="1" id="tot-stack" orientation="vertical" visibility="collapsed">
-                
-                <StackLayout id='stack-3' orientation="vertical"></StackLayout>
-               
-                <Label text="Totals:" />
-                
+            <StackLayout id="bar_chart" visibility="collapsed" height="500">
+                <Label class = "h3" text="Cumulative Score Chart" />
+                <chart:RadCartesianChart class="m-t-10" height="300">
+                    <chart:RadCartesianChart.series>
+                        <chart:LineSeries items="{{items_chart}}" categoryProperty="name" valueProperty="total">
+                            <chart:LineSeries.horizontalAxis>
+                                <chart:CategoricalAxis labelFitMode="Rotate" />
+                            </chart:LineSeries.horizontalAxis>
+                            <chart:LineSeries.verticalAxis>
+                                <chart:LinearAxis labelLayoutMode="Outer" />
+                            </chart:LineSeries.verticalAxis>
+                        </chart:LineSeries>
+                    </chart:RadCartesianChart.series>
+                </chart:RadCartesianChart>
             </StackLayout>
-
-            
-        </GridLayout>
-        <StackLayout row="2" id="stack-2" visibility="collapsed">
-            <StackLayout id='show_comm' >
-                
-            </StackLayout>
-            <StackLayout orientation="horizontal">
-            <Label text="Click on update to apply changes"/>
-            <Button text="Update" tap="{{onUpdate}}" backgroundColor="green" />
-        </StackLayout>
-
-        </StackLayout>
-
-    </GridLayout>
-    <StackLayout id="score_comm">
-
+        
     </StackLayout>
-</StackLayout>
 </ScrollView>
-</ScrollView>
-
+    
 </Page>

@@ -18,6 +18,7 @@ function onNavigatingTo(args) {
     https://docs.nativescript.org/api-reference/classes/_ui_page_.page.html
     */
     const page = args.object;
+    
 
     /*
     A page’s bindingContext is an object that should be used to perform
@@ -30,6 +31,7 @@ function onNavigatingTo(args) {
     https://docs.nativescript.org/core-concepts/data-binding.
     */
     page.bindingContext = createViewModel();
+    
 }
 
 /*
@@ -38,4 +40,4 @@ to the file’s corresponding XML file. In this case, exporting the onNavigating
 function here makes the navigatingTo="onNavigatingTo" binding in this page’s XML
 file work.
 */
-exports.onNavigatingTo = onNavigatingTo;
+exports.onNavigatingTo=onNavigatingTo
